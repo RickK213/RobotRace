@@ -14,15 +14,15 @@ $(document).ready(function() {
         });
     }
     function changeGameMessage(message) {
-        $("#gameMessages p").html(message);
+        $("#gameMessages").html(message);
     }
 
     function changePlayer1Message(message) {
-        $("#player1Messages p").html(message);
+        $("#player1Messages").html(message);
     }
 
     function changePlayer2Message(message) {
-        $("#player2Messages p").html(message);
+        $("#player2Messages").html(message);
     }
 
     function rollDice(numSides){
@@ -38,24 +38,45 @@ $(document).ready(function() {
 
     function showRollFirstResults(player1FirstRoll, player2FirstRoll) {
         let gameMessage;
-        let firstPlayer;
+        let isPlayer1Done;
         if ( player1FirstRoll === player2FirstRoll ) {
             gameMessage = 'Player 1 and Player 2 tied. <button class="btn btn-success" id="rollFirstsAgain">Roll Again</button>';
         } else if ( player1FirstRoll > player2FirstRoll ) {
             gameMessage = '<strong class="text-primary">PLAYER 1</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
-            firstPlayer = 1;
+            isPlayer1Done = false;
         } else {
             gameMessage = '<strong class="text-danger">PLAYER 2</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
-            firstPlayer = 2;
+            isPlayer1Done = true;
         }
         changeGameMessage(gameMessage);
         $("#rollFirstsAgain").click(function(){
             rollForFirsts();
         });        
         $("#startTurns").click(function(){
-            startTurns(firstPlayer);
+            startTurns(isPlayer1Done);
         });        
     }
+    
+    function switchPlayers(isPlayer1Done, doSwitchMessages) {
+        if(isPlayer1Done){
+            $("#player1Button").prop('disabled', true);
+            $("#player2Button").prop('disabled', false);
+            $("#player1 .diceInHand").html("");
+            if(doSwitchMessages){
+                changePlayer1Message('Wait for your turn.');
+                changePlayer2Message('It is your turn, roll the dice');
+            }
+        } else {
+            $("#player1Button").prop('disabled', false);
+            $("#player2Button").prop('disabled', true);
+            $("#player1 .diceInHand").html("");
+            if(doSwitchMessages){
+                changePlayer1Message('It is your turn, roll the dice');
+                changePlayer2Message('Wait for your turn.');
+            }
+        }
+    }
+
     function rollForFirsts(){
         $("#player1Button").prop('disabled', false);
         changeGameMessage('Let\'s begin by rolling the 6-sided die to see who goes first.');
@@ -66,10 +87,12 @@ $(document).ready(function() {
         $("#player1Button").click(function(){
             player1FirstRoll = rollFirstDie();
             changePlayer1Message('You rolled a ' + player1FirstRoll);
-            $(this).prop('disabled', true);
             changePlayer2Message('It is your turn, roll the dice');
-            $("#player2Button").prop('disabled', false);
-
+            let isPlayer1Done = true;
+            let doSwitchMessages = false;
+            switchPlayers(isPlayer1Done, doSwitchMessages);
+            let diceInPlay = getDiceInPlay("six");
+            putDiceInHand(isPlayer1Done, diceInPlay);
         });        
         $("#player2Button").click(function(){
             player2FirstRoll = rollFirstDie();
@@ -77,6 +100,38 @@ $(document).ready(function() {
             $(this).prop('disabled', true);
             showRollFirstResults(player1FirstRoll, player2FirstRoll);
         });
+    }
+
+    function putDiceInHand(isPlayer1Done, diceInPlay){
+        let switchDiv;
+        let diceDivs = "";
+        if(isPlayer1Done) {
+            switchDiv = "#player2 .diceInHand";
+        } else {
+            switchDiv = "#player1 .diceInHand";
+        }
+        for (let i=0; i<diceInPlay.length; i++) {
+            diceDivs += '<div class="die die-' + diceInPlay[i] + '"></div>';
+        }
+        $(switchDiv).html(diceDivs);
+    }
+
+    function getDiceInPlay(dice){
+        if(dice === "all"){
+            return [4,6,8,10,12,20];
+        } else if ( dice==="six" ) {
+            return [6];
+        } else if ( dice==="ten" ) {
+            return [10];
+        }
+    }
+    function initializeTurns(isPlayer1Done){
+        let switchMessages = true;
+        switchPlayers(isPlayer1Done, switchMessages);
+        let gameMessage = "Here we go!";
+        changeGameMessage(gameMessage);
+        let diceInPlay = getDiceInPlay("all");
+        putDiceInHand(isPlayer1Done, diceInPlay);
     }
 
 /*****************************************
@@ -94,8 +149,10 @@ $(document).ready(function() {
 /** START TURNS
 *****************************************/
 
-    function startTurns(firstPlayer) {
-        console.log("Player " + firstPlayer + " goes first");
+    function startTurns(isPlayer1Done) {
+        initializeTurns(isPlayer1Done);
+        let gameOver = false;
+
     }
 
 
