@@ -1,0 +1,9 @@
+body {
+    padding-top: 70px;
+}
+#gameBoard {
+    display: none;
+}
+#gameMessages {
+    background-color: #dff0d9;
+}
