@@ -1,6 +1,6 @@
-$(document).ready(function() {
+"use strict"
 
-    "use strict";
+$(document).ready(function() {
 
     startGame();
 
@@ -25,14 +25,14 @@ $(document).ready(function() {
         $("#player2Messages").html(message);
     }
 
-    function rollDice(numSides){
+    function getDieRollResult(numSides){
         let dieRoll = Math.floor(Math.random() * numSides) + 1;
         return dieRoll;
     }
 
     function rollFirstDie() {
         let numSides = 6;
-        let dieRoll = rollDice(numSides);
+        let dieRoll = getDieRollResult(numSides);
         return dieRoll;
     }
 
@@ -42,10 +42,10 @@ $(document).ready(function() {
         if ( player1FirstRoll === player2FirstRoll ) {
             gameMessage = 'Player 1 and Player 2 tied. <button class="btn btn-success" id="rollFirstsAgain">Roll Again</button>';
         } else if ( player1FirstRoll > player2FirstRoll ) {
-            gameMessage = '<strong class="text-primary">PLAYER 1</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
+            gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-primary">PLAYER 1</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
             isPlayer1Done = false;
         } else {
-            gameMessage = '<strong class="text-danger">PLAYER 2</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
+            gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-danger">PLAYER 2</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
             isPlayer1Done = true;
         }
         changeGameMessage(gameMessage);
@@ -53,23 +53,23 @@ $(document).ready(function() {
             rollForFirsts();
         });        
         $("#startTurns").click(function(){
+            $("#player1Button").off("click");
+            $("#player2Button").off("click");
             startTurns(isPlayer1Done);
         });        
     }
     
     function switchPlayers(isPlayer1Done, doSwitchMessages) {
         if(isPlayer1Done){
-            $("#player1Interface").addClass("invisible");
-            $("#player2Interface").removeClass("invisible");
-            $("#player1 .diceInHand").html("");
+            clearPlayer1Interface();
+            showPlayer2Interface();
             if(doSwitchMessages){
                 changePlayer1Message('Wait for your turn.');
                 changePlayer2Message('It is your turn, roll the dice');
             }
         } else {
-            $("#player1Interface").removeClass("invisible");
-            $("#player2Interface").addClass("invisible");
-            $("#player1 .diceInHand").html("");
+            clearPlayer2Interface();
+            showPlayer1Interface();
             if(doSwitchMessages){
                 changePlayer1Message('It is your turn, roll the dice');
                 changePlayer2Message('Wait for your turn.');
@@ -77,29 +77,118 @@ $(document).ready(function() {
         }
     }
 
-    function rollForFirsts(){
-        $("#player1Interface").removeClass("invisible");
-        changeGameMessage('Begin by rolling the 6-sided die to see who goes first.');
-        changePlayer1Message('It is your turn, roll the dice');
-        changePlayer2Message('Wait for your turn.');
+    function handleRollFirstButtons(){
         let player1FirstRoll;
         let player2FirstRoll;
-        $("#player1Button").click(function(){
-            player1FirstRoll = rollFirstDie();
-            changePlayer1Message('You rolled a ' + player1FirstRoll);
+        let numSides = 6;
+        let message;
+        $("#player1Button").on('click', function(event) {
+            event.preventDefault();
+            player1FirstRoll = getDieRollResult(numSides);
+            message = generateSingleRollMessage(numSides, player1FirstRoll);
+            changePlayer1Message(message);
             changePlayer2Message('It is your turn, roll the dice');
             let isPlayer1Done = true;
             let doSwitchMessages = false;
             switchPlayers(isPlayer1Done, doSwitchMessages);
             let diceInPlay = getDiceInPlay("six");
             putDiceInHand(isPlayer1Done, diceInPlay);
-        });        
-        $("#player2Button").click(function(){
+        });
+        $("#player2Button").on('click', function(event) {
+            event.preventDefault();
             player2FirstRoll = rollFirstDie();
-            changePlayer2Message('You rolled a ' + player2FirstRoll);
+            message = generateSingleRollMessage(numSides, player2FirstRoll);
+            changePlayer2Message(message);
             $("#player2Interface").addClass("invisible");
             showRollFirstResults(player1FirstRoll, player2FirstRoll);
         });
+    }
+
+    function generateSingleRollMessage(numSides, singleRoll) {
+        let message = '<div class="die-container"><div class="die-small die-' + numSides + '"></div><span class="dieRoll"> =' + singleRoll + '</span></div>';
+        return message;        
+    }
+
+    function clearPlayer1Interface(){
+        $("#player1Interface").addClass("invisible");
+        $("#player1 .diceInHand").html("");
+    }
+
+    function clearPlayer2Interface(){
+        $("#player2Interface").addClass("invisible");
+        $("#player2 .diceInHand").html("");
+    }
+
+    function showPlayer1Interface(){
+        $("#player1Interface").removeClass("invisible");
+    }
+
+    function showPlayer2Interface(){
+        $("#player2Interface").removeClass("invisible");
+    }
+
+    function checkForPrime(totalRoll) {
+        let isPrime;
+        for(let i=2; i<=totalRoll; i++){
+            isPrime = true;
+            for(let j=2; j<i; j++) {
+                if( i % j ===0 ) {
+                    isPrime = false;
+                }
+            }
+        }
+        return isPrime;
+    }
+
+    function rollDice(player, diceInHand){
+        let totalRoll = 0;
+        let singleRoll;
+        let message = "";
+        for( let i=0; i<diceInHand.length; i++ ) {
+            singleRoll = getDieRollResult(diceInHand[i]);
+            totalRoll += singleRoll;
+            message += generateSingleRollMessage(diceInHand[i], singleRoll);
+        }
+        message += '<hr><h5 class="text-primary">Total roll: ' + totalRoll;
+        let isPrime = checkForPrime(totalRoll);
+        if ( isPrime ) {
+            message += '<br>' + totalRoll + ' IS a prime number!</h5>';
+        } else {
+            message += '<br>' + totalRoll + ' IS NOT a prime number!</h5>';
+        }
+        console.log(isPrime);
+        if( player === 1 ) {
+            clearPlayer1Interface();
+            changePlayer1Message(message);
+            showPlayer2Interface();
+        } else {
+            clearPlayer2Interface();
+            changePlayer2Message(message);
+            showPlayer1Interface();
+        }
+    }
+
+    function handleRollButtons(){
+        $("#player1Button").on('click', function(event) {
+            event.preventDefault();
+            let player = 1;
+            let diceInHand = getDiceInPlay("all");
+            rollDice(player, diceInHand);
+        });
+        $("#player2Button").on('click', function(event) {
+            event.preventDefault();
+            let player = 2;
+            let diceInHand = getDiceInPlay("all");
+            rollDice(player, diceInHand);
+        });
+    }
+
+    function rollForFirsts(){
+        $("#player1Interface").removeClass("invisible");
+        changeGameMessage('Begin by rolling the 6-sided die to see who goes first.');
+        changePlayer1Message('It is your turn, roll the dice');
+        changePlayer2Message('Wait for your turn.');
+        handleRollFirstButtons();
     }
 
     function putDiceInHand(isPlayer1Done, diceInPlay){
@@ -152,8 +241,7 @@ $(document).ready(function() {
     function startTurns(isPlayer1Done) {
         initializeTurns(isPlayer1Done);
         let gameOver = false;
-
+        handleRollButtons();
     }
-
 
 });

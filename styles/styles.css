@@ -1,9 +1,17 @@
 body {
     padding-top: 40px;
 }
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3 {
     font-family: 'Audiowide', "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #337ab7;
+}
+.dieRoll {
+    display: inline-block;
+    line-height: 32px;
+    padding: 0;
+    margin: 0 15px 0 0;
+    vertical-align: top;
+    font-weight: bold;
 }
 #player2 h4 {
     color: #a94442;
@@ -17,6 +25,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 .diceInHand {
     height: 64px;
+}
+.die-container {
+    display: inline-block;
 }
 .die {
     background-image: url("../images/diceSprite.png");
@@ -43,6 +54,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 .die.die-20 {
     background-position: -320px 0;
+}
+.die-small {
+    background-image: url("../images/diceSprite-small.png");
+    height: 32px;
+    width: 32px;
+    display: inline-block;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+.die-small.die-4 {
+    background-position: 0 0;
+}
+.die-small.die-6 {
+    background-position: -32px 0;
+}
+.die-small.die-8 {
+    background-position: -64px 0;
+}
+.die-small.die-10 {
+    background-position: -96px 0;
+}
+.die-small.die-12 {
+    background-position: -128px 0;
+}
+.die-small.die-20 {
+    background-position: -160px 0;
 }
 .robot {
     width: 256px;
