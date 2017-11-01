@@ -1,2 +1,2 @@
-# javascript-dice-game
-devCodeCamp week 2 project—a dice game written in javascript
+# ROBOT RACE
+A javascript dice game.
