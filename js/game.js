@@ -38,15 +38,15 @@ $(document).ready(function() {
 
     function showRollFirstResults(player1FirstRoll, player2FirstRoll) {
         let gameMessage;
-        let isPlayer1Done;
+        let player;
         if ( player1FirstRoll === player2FirstRoll ) {
             gameMessage = 'Player 1 and Player 2 tied. <button class="btn btn-success" id="rollFirstsAgain">Roll Again</button>';
         } else if ( player1FirstRoll > player2FirstRoll ) {
             gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-primary">PLAYER 1</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
-            isPlayer1Done = false;
+            player = 1;
         } else {
             gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-danger">PLAYER 2</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
-            isPlayer1Done = true;
+            player = 2;
         }
         changeGameMessage(gameMessage);
         $("#rollFirstsAgain").click(function(){
@@ -55,24 +55,24 @@ $(document).ready(function() {
         $("#startTurns").click(function(){
             $("#player1Button").off("click");
             $("#player2Button").off("click");
-            startTurns(isPlayer1Done);
+            startTurns(player);
         });        
     }
     
-    function switchPlayers(isPlayer1Done, doSwitchMessages) {
-        if(isPlayer1Done){
-            clearPlayer1Interface();
-            showPlayer2Interface();
-            if(doSwitchMessages){
-                changePlayer1Message('Wait for your turn.');
-                changePlayer2Message('It is your turn, roll the dice');
-            }
-        } else {
+    function switchPlayers(player, doSwitchMessages) {
+        if(player === 1){
             clearPlayer2Interface();
             showPlayer1Interface();
             if(doSwitchMessages){
                 changePlayer1Message('It is your turn, roll the dice');
                 changePlayer2Message('Wait for your turn.');
+            }
+        } else {
+            clearPlayer1Interface();
+            showPlayer2Interface();
+            if(doSwitchMessages){
+                changePlayer1Message('Wait for your turn.');
+                changePlayer2Message('It is your turn, roll the dice');
             }
         }
     }
@@ -88,11 +88,11 @@ $(document).ready(function() {
             message = generateSingleRollMessage(numSides, player1FirstRoll);
             changePlayer1Message(message);
             changePlayer2Message('It is your turn, roll the dice');
-            let isPlayer1Done = true;
+            let player = 2;
             let doSwitchMessages = false;
-            switchPlayers(isPlayer1Done, doSwitchMessages);
+            switchPlayers(player, doSwitchMessages);
             let diceInPlay = getDiceInPlay("six");
-            putDiceInHand(isPlayer1Done, diceInPlay);
+            putDiceInHand(player, diceInPlay);
         });
         $("#player2Button").on('click', function(event) {
             event.preventDefault();
@@ -153,10 +153,11 @@ $(document).ready(function() {
         let isPrime = checkForPrime(totalRoll);
         if ( isPrime ) {
             message += '<br>' + totalRoll + ' IS a prime number!</h5>';
+            rollforPiece(); //need to write this
         } else {
             message += '<br>' + totalRoll + ' IS NOT a prime number!</h5>';
+            changeGameMessage('The result was not a prime number, the game continues...');
         }
-        console.log(isPrime);
         if( player === 1 ) {
             clearPlayer1Interface();
             changePlayer1Message(message);
@@ -191,13 +192,13 @@ $(document).ready(function() {
         handleRollFirstButtons();
     }
 
-    function putDiceInHand(isPlayer1Done, diceInPlay){
+    function putDiceInHand(player, diceInPlay){
         let switchDiv;
         let diceDivs = "";
-        if(isPlayer1Done) {
-            switchDiv = "#player2 .diceInHand";
-        } else {
+        if(player === 1) {
             switchDiv = "#player1 .diceInHand";
+        } else {
+            switchDiv = "#player2 .diceInHand";
         }
         for (let i=0; i<diceInPlay.length; i++) {
             diceDivs += '<div class="die die-' + diceInPlay[i] + '"></div>';
@@ -214,13 +215,13 @@ $(document).ready(function() {
             return [10];
         }
     }
-    function initializeTurns(isPlayer1Done){
+    function initializeTurns(player){
         let switchMessages = true;
-        switchPlayers(isPlayer1Done, switchMessages);
+        switchPlayers(player, switchMessages);
         let gameMessage = "Here we go!";
         changeGameMessage(gameMessage);
         let diceInPlay = getDiceInPlay("all");
-        putDiceInHand(isPlayer1Done, diceInPlay);
+        putDiceInHand(player, diceInPlay);
     }
 
 /*****************************************
@@ -238,8 +239,8 @@ $(document).ready(function() {
 /** START TURNS
 *****************************************/
 
-    function startTurns(isPlayer1Done) {
-        initializeTurns(isPlayer1Done);
+    function startTurns(player) {
+        initializeTurns(player);
         let gameOver = false;
         handleRollButtons();
     }
