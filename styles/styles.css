@@ -1,6 +1,14 @@
 body {
     padding-top: 40px;
 }
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Audiowide', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #337ab7;
+}
+#player2 h4 {
+    color: #a94442;
+}
+
 #gameBoard {
     display: none;
 }
@@ -37,5 +45,57 @@ body {
     background-position: -320px 0;
 }
 .robot {
-    background-color: green;
+    width: 256px;
+    height: 256px;
+    display: block;
+    margin: 20px auto;
+    position: relative;
+}
+#player1Robot {
+    background-image: url("../images/robot1-start.png");
+}
+#player2Robot {
+    background-image: url("../images/robot2-start.png");
+}
+.robotPiece {
+    position: absolute;
+    width: 256px;
+    height: 256px;
+}
+#robot1Piece1 {
+    background-image: url("../images/robot1-piece1.png");
+}
+#robot1Piece2 {
+    background-image: url("../images/robot1-piece2.png");
+}
+#robot1Piece3 {
+    background-image: url("../images/robot1-piece3.png");
+}
+#robot1Piece4 {
+    background-image: url("../images/robot1-piece4.png");
+}
+#robot1Piece5 {
+    background-image: url("../images/robot1-piece5.png");
+}
+#robot1Piece6 {
+    background-image: url("../images/robot1-piece6.png");
+}
+
+#robot2Piece1 {
+    background-image: url("../images/robot2-piece1.png");
+}
+#robot2Piece2 {
+    background-image: url("../images/robot2-piece2.png");
+}
+#robot2Piece3 {
+    background-image: url("../images/robot2-piece3.png");
+}
+#robot2Piece4 {
+    background-image: url("../images/robot2-piece4.png");
+}
+#robot2Piece5 {
+    background-image: url("../images/robot2-piece5.png");
+}
+#robot2Piece6 {
+    background-image: url("../images/robot2-piece6.png");
 }

@@ -59,16 +59,16 @@ $(document).ready(function() {
     
     function switchPlayers(isPlayer1Done, doSwitchMessages) {
         if(isPlayer1Done){
-            $("#player1Button").prop('disabled', true);
-            $("#player2Button").prop('disabled', false);
+            $("#player1Interface").addClass("invisible");
+            $("#player2Interface").removeClass("invisible");
             $("#player1 .diceInHand").html("");
             if(doSwitchMessages){
                 changePlayer1Message('Wait for your turn.');
                 changePlayer2Message('It is your turn, roll the dice');
             }
         } else {
-            $("#player1Button").prop('disabled', false);
-            $("#player2Button").prop('disabled', true);
+            $("#player1Interface").removeClass("invisible");
+            $("#player2Interface").addClass("invisible");
             $("#player1 .diceInHand").html("");
             if(doSwitchMessages){
                 changePlayer1Message('It is your turn, roll the dice');
@@ -78,8 +78,8 @@ $(document).ready(function() {
     }
 
     function rollForFirsts(){
-        $("#player1Button").prop('disabled', false);
-        changeGameMessage('Let\'s begin by rolling the 6-sided die to see who goes first.');
+        $("#player1Interface").removeClass("invisible");
+        changeGameMessage('Begin by rolling the 6-sided die to see who goes first.');
         changePlayer1Message('It is your turn, roll the dice');
         changePlayer2Message('Wait for your turn.');
         let player1FirstRoll;
@@ -97,7 +97,7 @@ $(document).ready(function() {
         $("#player2Button").click(function(){
             player2FirstRoll = rollFirstDie();
             changePlayer2Message('You rolled a ' + player2FirstRoll);
-            $(this).prop('disabled', true);
+            $("#player2Interface").addClass("invisible");
             showRollFirstResults(player1FirstRoll, player2FirstRoll);
         });
     }

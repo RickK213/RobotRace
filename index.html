@@ -8,6 +8,7 @@
     <meta name="author" content="Rick Kippert">
     <title>ROBOT RACE | A Javascript Dice Game</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles/styles.css">
 </head>
 <body>
@@ -27,14 +28,13 @@
                             <div class="die die-12"></div>
                             <div class="die die-20"></div>
                         </li>
-                        <li>The goal of the game is to be the first player to build their robot. Each robot has 10 pieces.</li>
+                        <li>The goal of the game is to be the first player to build their robot. Each robot has 6 pieces.</li>
                         <li>To begin the game, each player rolls the 6-sided die. The higher number goes first.</li>
                         <li>In each round of play, each player rolls all the dice.</li>
-                        <li>If the result of the roll is a <strong class="text-info">PRIME</strong> number, the player has the opporunity to add to their robot by rolling the 10-sided die.</li>
+                        <li>If the result of the roll is a <strong class="text-info">PRIME</strong> number, the player has the opporunity to add to their robot by rolling the 6-sided die.</li>
                         <li>Each piece of the robot is numbered 1-10. The roll of the 10-sided die determines which piece the player adds to their robot. If the player already has that piece, nothing is added and their opponent takes a turn.</li>
                     </ol>
-                    <h3>Let the race begin!</h3>
-                    <p><button class="btn btn-primary playButton">Start Game</button></p>
+                    <p><button class="btn btn-lg btn-primary playButton">Let The Race Begin!</button></p>
                 </div>
             </div>
         </div>
@@ -48,37 +48,54 @@
                 <h4 class="text-center text-primary">PLAYER 1</h4>
                 <hr>
                 <div class="robot" id="player1Robot">
-                    <!--this is the player 1 robot -->
+                    <div class="robotPiece invisible" id="robot1Piece1"></div>
+                    <div class="robotPiece invisible" id="robot1Piece2"></div>
+                    <div class="robotPiece invisible" id="robot1Piece3"></div>
+                    <div class="robotPiece invisible" id="robot1Piece4"></div>
+                    <div class="robotPiece invisible" id="robot1Piece5"></div>
+                    <div class="robotPiece invisible" id="robot1Piece6"></div>
                 </div>
                 <div class="well" id="player1Messages">
                     <!--this is the player 1 message -->
                 </div>
-                <button class="btn btn-primary btn-block" id="player1Button">Roll</button>
-                <p><small>DICE IN HAND:</small></p>
-                <div class="diceInHand">
-                    <div class="die die-6"></div>
-                </div>
+                    <div id="player1Interface">
+                        <button class="btn btn-lg btn-primary btn-block" id="player1Button">ROLL DICE</button>
+                        <p><small>DICE IN HAND:</small></p>
+                        <div class="diceInHand">
+                            <div class="die die-6"></div>
+                        </div>
+                    </div>
                 <hr>
             </div>
             <div class="col-sm-6" id="player2">
                 <h4 class="text-center text-danger">PLAYER 2</h4>
                 <hr>
-                <div class="robot" id="player1Robot">
-                    <!--this is the player 2 robot -->
+                <div class="robot" id="player2Robot">
+                    <div class="robotPiece invisible" id="robot2Piece1"></div>
+                    <div class="robotPiece invisible" id="robot2Piece2"></div>
+                    <div class="robotPiece invisible" id="robot2Piece3"></div>
+                    <div class="robotPiece invisible" id="robot2Piece4"></div>
+                    <div class="robotPiece invisible" id="robot2Piece5"></div>
+                    <div class="robotPiece invisible" id="robot2Piece6"></div>
                 </div>
                 <div class="well" id="player2Messages">
                     <!--this is the player 2 message -->
                 </div>
-                <button class="btn btn-danger btn-block" disabled="disabled" id="player2Button">Roll</button>
-                <p><small>DICE IN HAND:</small></p>
-                <div class="diceInHand">
-                    <!--this is player 2's "dice in hand" -->
-                </div>
+                    <div id="player2Interface" class="invisible">
+                        <button class="btn btn-lg btn-danger btn-block" id="player2Button">ROLL DICE</button>
+                        <p><small>DICE IN HAND:</small></p>
+                        <div class="diceInHand">
+                            <!--this is player 2's "dice in hand" -->
+                        </div>
+                    </div>
                 <hr>
             </div>
         </div>
+    <footer>
+        <p>Robot images by <a href="https://soy-monk.deviantart.com/" target="_blank">soy-monk</a>. Dice images by <a href="http://www.iconarchive.com/show/dnd-dice-icons-by-iconcubic.html" target="_blank">iconcubic.</a></p>
+    </footer>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="js/index.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>
