@@ -8,3 +8,5 @@ How to Play:
 4. In each round of play, each player rolls all the dice.
 5. If the result of the roll is a PRIME number, the player has the opporunity to add to their robot by rolling the 6-sided die.
 6. Each piece of the robot is numbered 1-6. The roll of the 6-sided die determines which piece the player adds to their robot. If the player already has that piece, nothing is added and their opponent takes a turn.
+
+LET THE RACE BEGIN!
