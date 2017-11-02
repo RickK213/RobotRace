@@ -27,6 +27,7 @@
                             <div class="die die-10"></div>
                             <div class="die die-12"></div>
                             <div class="die die-20"></div>
+                            <div class="clearfix"></div>
                         </li>
                         <li>The goal of the game is to be the first player to build their robot. Each robot has 6 pieces.</li>
                         <li>To begin the game, each player rolls the 4-sided die. The higher number goes first.</li>
@@ -35,16 +36,11 @@
                         <li>Each piece of the robot is numbered 1-6. The roll of the 6-sided die determines which piece the player adds to their robot. If the player already has that piece, nothing is added and their opponent takes a turn.</li>
                         <li>Once a player has added all of the pieces to their robot, they win!</li>
                     </ol>
-                    <p><button class="btn btn-lg btn-primary playButton">Let The Race Begin!</button></p>
+                    <p><button class="btn btn-lg btn-primary" id="playButton">Let The Race Begin!</button></p>
                 </div>
             </div>
         </div>
         <div class="row" id="gameBoard">
-            <div class="col-sm-12">
-                <div class="well" id="gameMessages">
-                    <!--this is the game messages -->
-                </div>
-            </div>
             <div class="col-sm-6" id="player1">
                 <h4 class="text-center text-primary">PLAYER 1</h4>
                 <hr>
@@ -55,15 +51,39 @@
                     <div class="robotPiece invisible" id="robot1Piece4"></div>
                     <div class="robotPiece invisible" id="robot1Piece5"></div>
                     <div class="robotPiece invisible" id="robot1Piece6"></div>
+                    <div class="pieceNumbersContainer">
+                        <span class="pieceNumber piece1"></span>
+                        <span class="pieceNumber piece2"></span>
+                        <span class="pieceNumber piece3"></span>
+                        <span class="pieceNumber piece4"></span>
+                        <span class="pieceNumber piece5"></span>
+                        <span class="pieceNumber piece6"></span>
+                    </div>
                 </div>
                 <div class="well" id="player1Messages">
                     <!--this is the player 1 message -->
                 </div>
                     <div id="player1Interface">
-                        <button class="btn btn-lg btn-primary btn-block" id="player1Button">ROLL DICE</button>
-                        <p><small>DICE IN HAND:</small></p>
-                        <div class="diceInHand">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <div class="diceInHand well">
+                                    <p><small><strong><u>IN HAND</u></strong> (click to remove):</small></p>
+                                    <div class="die die-4"></div>
+                                    <div class="die die-6"></div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6"><button class="btn btn-lg btn-primary btn-block" id="player1Button">ROLL DICE</button></div>
+                        </div>
+                        <div class="diceSelector well">
+                            <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
                             <div class="die die-4"></div>
+                            <div class="die die-6"></div>
+                            <div class="die die-8"></div>
+                            <div class="die die-10"></div>
+                            <div class="die die-12"></div>
+                            <div class="die die-20"></div>
+                            <div class="clearfix"></div>
                         </div>
                     </div>
                 <hr>
@@ -78,15 +98,33 @@
                     <div class="robotPiece invisible" id="robot2Piece4"></div>
                     <div class="robotPiece invisible" id="robot2Piece5"></div>
                     <div class="robotPiece invisible" id="robot2Piece6"></div>
+                    <div class="pieceNumbersContainer">
+                        <span class="pieceNumber piece1"></span>
+                        <span class="pieceNumber piece2"></span>
+                        <span class="pieceNumber piece3"></span>
+                        <span class="pieceNumber piece4"></span>
+                        <span class="pieceNumber piece5"></span>
+                        <span class="pieceNumber piece6"></span>
+                    </div>
                 </div>
                 <div class="well" id="player2Messages">
                     <!--this is the player 2 message -->
                 </div>
-                    <div id="player2Interface" class="invisible">
-                        <button class="btn btn-lg btn-danger btn-block" id="player2Button">ROLL DICE</button>
-                        <p><small>DICE IN HAND:</small></p>
-                        <div class="diceInHand">
-                            <!--this is player 2's "dice in hand" -->
+                    <div id="player2Interface">
+                        <div class="row">
+                            <div class="col-xs-2"><small><strong><u>IN HAND</u></strong> (click to remove):</small></div>
+                            <div class="col-xs-4"><div class="die die-4"></div><div class="die die-6"></div></div>
+                            <div class="col-xs-6"><button class="btn btn-lg btn-danger btn-block" id="player2Button">ROLL DICE</button></div>
+                        </div>
+                        <div class="diceSelector well">
+                            <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
+                            <div class="die die-4"></div>
+                            <div class="die die-6"></div>
+                            <div class="die die-8"></div>
+                            <div class="die die-10"></div>
+                            <div class="die die-12"></div>
+                            <div class="die die-20"></div>
+                            <div class="clearfix"></div>
                         </div>
                     </div>
                 <hr>

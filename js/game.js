@@ -7,11 +7,13 @@ $(document).ready(function() {
 *****************************************/
     let player1 = {
         name: "Player 1",
-        piecesEarned: []
+        piecesEarned: [],
+        pieceNumbers: []
     };
     let player2 = {
         name: "Player 2",
-        piecesEarned: []
+        piecesEarned: [],
+        pieceNumbers: []
     };
 
 /*****************************************
@@ -95,7 +97,6 @@ $(document).ready(function() {
         let numSides = 4;
         let message;
         $("#player1Button").on('click touchstart', function(event) {
-            event.preventDefault();
             player1FirstRoll = getDieRollResult(numSides);
             message = generateSingleRollMessage(numSides, player1FirstRoll);
             changePlayer1Message(message);
@@ -105,46 +106,54 @@ $(document).ready(function() {
             switchPlayers(player, doSwitchMessages);
             let diceInPlay = getDiceInPlay(numSides);
             putDiceInHand(player, diceInPlay);
+            event.preventDefault();
+            return false;
         });
         $("#player2Button").on('click touchstart', function(event) {
-            event.preventDefault();
             player2FirstRoll = getDieRollResult(numSides);
             message = generateSingleRollMessage(numSides, player2FirstRoll);
             changePlayer2Message(message);
             $("#player2Interface").addClass("invisible");
             showRollFirstResults(player1FirstRoll, player2FirstRoll);
+            event.preventDefault();
+            return false;
         });
     }
 
     function handleRollButtons(){
         let numSides = "all";
         $("#player1Button").on('click touchstart', function(event) {
-            event.preventDefault();
             let player = 1;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPrime(player, diceInHand);
+            event.preventDefault();
+            return false;
         });
         $("#player2Button").on('click touchstart', function(event) {
             event.preventDefault();
             let player = 2;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPrime(player, diceInHand);
+            event.preventDefault();
+            return false;
         });
     }
 
     function handleRollForPieceButtons(){
         let numSides = 6;
         $("#player1Button").on('click touchstart', function(event) {
-            event.preventDefault();
             let player = 1;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPiece(player, diceInHand);
+            event.preventDefault();
+            return false;
         });
         $("#player2Button").on('click touchstart', function(event) {
-            event.preventDefault();
             let player = 2;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPiece(player, diceInHand);
+            event.preventDefault();
+            return false;
         });
     }
 
@@ -364,13 +373,58 @@ $(document).ready(function() {
         handleRollButtons();
     }
 
+    function generatePieceNumbers(floor, ceiling, numPieces){
+        let pieceNumberArray = [];
+        while ( pieceNumberArray.length<numPieces ) {
+            let pieceNumber = Math.floor(Math.random() * ceiling) + floor;
+            pieceNumberArray.push(pieceNumber);
+        }
+        return pieceNumberArray;
+    }
+
+    function drawPlayerBoard(playerNumber){
+        let player;
+        let pieceNumber;
+        let selectorID;
+        switch(playerNumber){
+            case 1:
+                player = player1;
+                selectorID = "#player1Robot";
+                break;
+            case 2:
+                player = player2;
+                selectorID = "#player2Robot";
+                break;
+            default:
+                player = player1;
+                selectorID = "#player1Robot";
+        }
+        for(let i=0; i<player.pieceNumbers.length; i++) {
+            pieceNumber = player.pieceNumbers[i];
+            let selectorDiv = selectorID + " .piece" + (i+1);
+            $(selectorDiv).html(pieceNumber);
+        }
+    }
+
+    function generatePlayerPieces(){
+        let floor = 2;
+        let ceiling = 40;
+        let numPieces = 6;
+        player1.pieceNumbers = generatePieceNumbers(floor, ceiling, numPieces);
+        player2.pieceNumbers = generatePieceNumbers(floor, ceiling, numPieces);
+        drawPlayerBoard(1);
+        drawPlayerBoard(2);
+    }
+
 /*****************************************
 /** START GAME
 *****************************************/
 
     function startGame() {
-        $(".playButton").on('click touchstart', function(event) {
+        $("#playButton").on('click touchstart tap', function(event) {
             event.preventDefault();
+            event.stopImmediatePropagation();
+            generatePlayerPieces();
             fadeInGameBoard();
             rollForFirsts();
         });
