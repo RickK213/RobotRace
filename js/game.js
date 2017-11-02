@@ -8,12 +8,14 @@ $(document).ready(function() {
     let player1 = {
         name: "Player 1",
         piecesEarned: [],
-        pieceNumbers: []
+        pieceNumbers: [],
+        diceInHand: []
     };
     let player2 = {
         name: "Player 2",
         piecesEarned: [],
-        pieceNumbers: []
+        pieceNumbers: [],
+        diceInHand: []
     };
 
 /*****************************************
@@ -26,21 +28,22 @@ $(document).ready(function() {
 /** HELPER FUNCTIONS
 *****************************************/
 
-    function fadeInGameBoard() {
+    function initGameBoard() {
         $("#howToPlay").fadeOut(function(){
             $('#gameBoard').fadeIn();
+            setDiceColumnHeights();
+            handleDiceColumnResize();
         });
-    }
-    function changeGameMessage(message) {
-        $("#gameMessages").html(message);
     }
 
     function changePlayer1Message(message) {
-        $("#player1Messages").html(message);
+        let playerMessage = '<span class="text-primary playerName">' + player1.name + ":</span> " + message;
+        $("#player1Messages").html(playerMessage);
     }
 
     function changePlayer2Message(message) {
-        $("#player2Messages").html(message);
+        let playerMessage = '<span class="text-danger playerName">' + player2.name + ":</span> " + message;
+        $("#player2Messages").html(playerMessage);
     }
 
     function getDieRollResult(numSides){
@@ -319,7 +322,6 @@ $(document).ready(function() {
 
     function rollForFirsts(){
         $("#player1Interface").removeClass("invisible");
-        changeGameMessage('Begin by rolling the 4-sided die to see who goes first.');
         changePlayer1Message('It is your turn, roll the dice');
         changePlayer2Message('Wait for your turn.');
         handleRollFirstButtons();
@@ -376,7 +378,7 @@ $(document).ready(function() {
     function generatePieceNumbers(floor, ceiling, numPieces){
         let pieceNumberArray = [];
         while ( pieceNumberArray.length<numPieces ) {
-            let pieceNumber = Math.floor(Math.random() * ceiling) + floor;
+            let pieceNumber = Math.floor(Math.random()*(ceiling-floor+1)+floor);
             pieceNumberArray.push(pieceNumber);
         }
         return pieceNumberArray;
@@ -408,12 +410,70 @@ $(document).ready(function() {
 
     function generatePlayerPieces(){
         let floor = 2;
-        let ceiling = 40;
+        let ceiling = 32;
         let numPieces = 6;
         player1.pieceNumbers = generatePieceNumbers(floor, ceiling, numPieces);
         player2.pieceNumbers = generatePieceNumbers(floor, ceiling, numPieces);
         drawPlayerBoard(1);
         drawPlayerBoard(2);
+    }
+
+    function setDiceColumnHeights(){
+        let heightSelector = $(".diceSelector").height(); 
+        let heightInHand = $(".diceInHand").height(); 
+        let maxHeight;
+        if ( heightSelector>heightInHand ) {
+            maxHeight = heightSelector;
+        } else {
+            maxHeight = heightInHand;
+        }
+        $(".diceInHand").height(maxHeight);
+        $(".diceSelector").height(maxHeight);
+    }
+    function handleDiceColumnResize(){
+        $( window ).resize(function() {
+          setDiceColumnHeights();
+        });
+    }
+
+    function handleDiceSelector(){
+        $('.diceSelector').on('click touchstart', '.die' , function(event) {
+            let diceInHandObject = $(this).parent().parent().siblings().children('.diceInHand');
+            let numDiceInHand = diceInHandObject.children().length-1;
+            console.log( numDiceInHand );
+            if( numDiceInHand ===2 ) {
+                alert('You can only roll 2 dice. Click the dice in your hand to remove them.');
+            } else {
+                let className = ( $(this)[0].className );
+                let divString = '<div class="' + className + '"></div>';
+                diceInHandObject.prepend(divString);
+                $(this).remove();
+            }
+        });
+    }
+
+    function handleDiceInHand(){
+        $('.diceInHand').on('click touchstart', '.die' , function(event) {
+            let diceSelectorObject = $(this).parent().parent().siblings().children('.diceSelector');
+            let className = ( $(this)[0].className );
+            let divString = '<div class="' + className + '"></div>';
+            diceSelectorObject.prepend(divString);
+            $(this).remove();
+        });
+    }
+    function handlePlayersDice(){
+        
+    }
+
+    function setPlayerNames(){
+        let player1Name = $("#player1Name").val();
+        let player2Name = $("#player2Name").val();
+        if ( player1Name.length > 0 ) {
+            player1.name = player1Name;
+        }
+        if ( player2Name.length > 0 ) {
+            player2.name = player2Name;
+        }
     }
 
 /*****************************************
@@ -422,10 +482,12 @@ $(document).ready(function() {
 
     function startGame() {
         $("#playButton").on('click touchstart tap', function(event) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
+            setPlayerNames();
             generatePlayerPieces();
-            fadeInGameBoard();
+            initGameBoard();
+            handleDiceSelector();
+            handleDiceInHand();
+            handlePlayersDice();
             rollForFirsts();
         });
     }

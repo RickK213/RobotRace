@@ -13,15 +13,15 @@ h1, h2, h3 {
     vertical-align: top;
     font-weight: bold;
 }
-#player2 h4 {
-    color: #a94442;
+.playerName {
+    font-weight: bold;
+    text-transform: uppercase;
 }
-
+#playButton {
+    margin-top: 20px;
+}
 #gameBoard {
     display: none;
-}
-#gameMessages {
-    background-color: #dff0d9;
 }
 .die-container {
     display: inline-block;

@@ -36,14 +36,22 @@
                         <li>Each piece of the robot is numbered 1-6. The roll of the 6-sided die determines which piece the player adds to their robot. If the player already has that piece, nothing is added and their opponent takes a turn.</li>
                         <li>Once a player has added all of the pieces to their robot, they win!</li>
                     </ol>
-                    <p><button class="btn btn-lg btn-primary" id="playButton">Let The Race Begin!</button></p>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <label for="player1Name" class="control-label">Player 1:</label>
+                            <input type="text" class="form-control" id="player1Name" placeholder="enter your name">
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="player1Name" class="control-label">Player 2:</label>
+                            <input type="text" class="form-control" id="player2Name" placeholder="enter your name">
+                        </div>
+                    </div>
+                    <button class="btn btn-lg btn-primary" id="playButton">Let The Race Begin!</button>
                 </div>
             </div>
         </div>
         <div class="row" id="gameBoard">
             <div class="col-sm-6" id="player1">
-                <h4 class="text-center text-primary">PLAYER 1</h4>
-                <hr>
                 <div class="robot" id="player1Robot">
                     <div class="robotPiece invisible" id="robot1Piece1"></div>
                     <div class="robotPiece invisible" id="robot1Piece2"></div>
@@ -65,32 +73,34 @@
                 </div>
                     <div id="player1Interface">
                         <div class="row">
-                            <div class="col-xs-6">
-                                <div class="diceInHand well">
-                                    <p><small><strong><u>IN HAND</u></strong> (click to remove):</small></p>
+                            <div class="col-md-6">
+                                <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
+                                <div class="diceSelector well">
                                     <div class="die die-4"></div>
                                     <div class="die die-6"></div>
+                                    <div class="die die-8"></div>
+                                    <div class="die die-10"></div>
+                                    <div class="die die-12"></div>
+                                    <div class="die die-20"></div>
                                     <div class="clearfix"></div>
                                 </div>
                             </div>
-                            <div class="col-xs-6"><button class="btn btn-lg btn-primary btn-block" id="player1Button">ROLL DICE</button></div>
+                            <div class="col-md-6 ">
+                                <p><small><strong><u>IN HAND:</u></strong> (click to remove):</small></p>
+                                <div class="diceInHand well">
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="diceSelector well">
-                            <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
-                            <div class="die die-4"></div>
-                            <div class="die die-6"></div>
-                            <div class="die die-8"></div>
-                            <div class="die die-10"></div>
-                            <div class="die die-12"></div>
-                            <div class="die die-20"></div>
-                            <div class="clearfix"></div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-lg btn-primary btn-block" id="player1Button">ROLL DICE</button>
+                            </div>
                         </div>
                     </div>
                 <hr>
             </div>
             <div class="col-sm-6" id="player2">
-                <h4 class="text-center text-danger">PLAYER 2</h4>
-                <hr>
                 <div class="robot" id="player2Robot">
                     <div class="robotPiece invisible" id="robot2Piece1"></div>
                     <div class="robotPiece invisible" id="robot2Piece2"></div>
@@ -112,19 +122,29 @@
                 </div>
                     <div id="player2Interface">
                         <div class="row">
-                            <div class="col-xs-2"><small><strong><u>IN HAND</u></strong> (click to remove):</small></div>
-                            <div class="col-xs-4"><div class="die die-4"></div><div class="die die-6"></div></div>
-                            <div class="col-xs-6"><button class="btn btn-lg btn-danger btn-block" id="player2Button">ROLL DICE</button></div>
+                            <div class="col-md-6">
+                                <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
+                                <div class="diceSelector well">
+                                    <div class="die die-4"></div>
+                                    <div class="die die-6"></div>
+                                    <div class="die die-8"></div>
+                                    <div class="die die-10"></div>
+                                    <div class="die die-12"></div>
+                                    <div class="die die-20"></div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 ">
+                                <p><small><strong><u>IN HAND:</u></strong> (click to remove):</small></p>
+                                <div class="diceInHand well">
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="diceSelector well">
-                            <p><small><strong><u>CLICK TO SELECT TWO DICE:</u></strong></small></p>
-                            <div class="die die-4"></div>
-                            <div class="die die-6"></div>
-                            <div class="die die-8"></div>
-                            <div class="die die-10"></div>
-                            <div class="die die-12"></div>
-                            <div class="die die-20"></div>
-                            <div class="clearfix"></div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <button class="btn btn-lg btn-danger btn-block" id="player2Button">ROLL DICE</button>
+                            </div>
                         </div>
                     </div>
                 <hr>
