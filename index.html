@@ -76,7 +76,6 @@
                             <div class="col-md-6">
                                 <p><small><strong><u>CLICK TO SELECT DICE:</u></strong></small></p>
                                 <div class="diceSelector well">
-                                    <div class="die die-4"></div>
                                     <div class="clearfix"></div>
                                 </div>
                             </div>
@@ -120,7 +119,7 @@
                             <div class="col-md-6">
                                 <p><small><strong><u>CLICK TO SELECT DICE:</u></strong></small></p>
                                 <div class="diceSelector well">
-                                    <div class="die die-4" data-numSides=4></div>
+                                    <div class="die die-4"></div>
                                     <div class="clearfix"></div>
                                 </div>
                             </div>
@@ -143,6 +142,24 @@
     <footer>
         <p class="text-center">Robot images by <a href="https://soy-monk.deviantart.com/" target="_blank">soy-monk</a>. Dice images by <a href="http://www.iconarchive.com/show/dnd-dice-icons-by-iconcubic.html" target="_blank">iconcubic</a>.</p>
     </footer>
+
+    <div class="modal fade" id="gameModal" tabindex="-1" role="dialog" aria-labelledby="messageTitle">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="messageTitle">Modal title</h4>
+          </div>
+          <div class="modal-body" id="messageBody">
+            game message body
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal" id="messageButton">Got it!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="js/game.js"></script>

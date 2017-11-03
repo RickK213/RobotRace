@@ -37,12 +37,12 @@ $(document).ready(function() {
     }
 
     function changePlayer1Message(message) {
-        let playerMessage = '<span class="text-primary playerName">' + player1.name + ":</span> " + message;
+        let playerMessage = '<span class="text-primary playerName">' + player1.name + ":</span><br>" + message;
         $("#player1Messages").html(playerMessage);
     }
 
     function changePlayer2Message(message) {
-        let playerMessage = '<span class="text-danger playerName">' + player2.name + ":</span> " + message;
+        let playerMessage = '<span class="text-danger playerName">' + player2.name + ":</span><br>" + message;
         $("#player2Messages").html(playerMessage);
     }
 
@@ -54,38 +54,46 @@ $(document).ready(function() {
     function showRollFirstResults(player1FirstRoll, player2FirstRoll) {
         let gameMessage;
         let player;
+        let alertTitle;
+        let buttonText;
+        let isTied = false;
+        let actionAfterClose;
         if ( player1FirstRoll === player2FirstRoll ) {
-            gameMessage = 'Player 1 and Player 2 tied. <button class="btn btn-success" id="rollFirstsAgain">Roll Again</button>';
+            alertTitle = 'It\'s a tie!'
+            gameMessage = 'Player 1 and Player 2 tied.';
+            isTied = true;
         } else if ( player1FirstRoll > player2FirstRoll ) {
-            gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-primary">PLAYER 1</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
+            alertTitle = player1.name + ' Goes First!'
+            gameMessage = player1.name + ' rolled a ' + player1FirstRoll + '. ' + player2.name + ' rolled a ' + player2FirstRoll + '. <strong class="text-primary">' + player1.name + '</strong> goes first!';
             player = 1;
         } else {
-            gameMessage = 'Player 1 rolled a ' + player1FirstRoll + '. Player 2 rolled a ' + player2FirstRoll + '. <strong class="text-danger">PLAYER 2</strong> goes first! <button class="btn btn-success" id="startTurns">Let\'s Play!</button>';
+            alertTitle = player2.name + ' Goes First!'
+            gameMessage = player1.name + ' rolled a ' + player1FirstRoll + '. ' + player2.name + ' rolled a ' + player2FirstRoll + '. <strong class="text-danger">' + player2.name + '</strong> goes first!';
             player = 2;
         }
-        changeGameMessage(gameMessage);
-        $("#rollFirstsAgain").on('click touchstart', function(event) {
-            event.preventDefault();
-            rollForFirsts();
-        });        
-        $("#startTurns").on('click touchstart', function(event) {
-            event.preventDefault();
-            $("#player1Button").off();
-            $("#player2Button").off();
-            startTurns(player);
-        });        
+
+        if (isTied) {
+            actionAfterClose = rollForFirsts;
+            buttonText = 'Roll Again';
+        } else {
+            actionAfterClose = startTurns;
+            buttonText = 'Let\'s Play!';
+        }
+        let actionArgument = player;
+
+        fireModal(alertTitle, gameMessage, buttonText, actionAfterClose, actionArgument);
     }
     
     function switchPlayers(player, doSwitchMessages) {
         if(player === 1){
-            clearPlayer2Interface();
+            hidePlayer2Interface();
             showPlayer1Interface();
             if(doSwitchMessages){
                 changePlayer1Message('It is your turn, roll the dice');
                 changePlayer2Message('Wait for your turn.');
             }
         } else {
-            clearPlayer1Interface();
+            hidePlayer1Interface();
             showPlayer2Interface();
             if(doSwitchMessages){
                 changePlayer1Message('Wait for your turn.');
@@ -94,62 +102,83 @@ $(document).ready(function() {
         }
     }
 
+    function getDiceTotal(diceInHand){
+        let singleRoll;
+        let totalRoll = 0;
+        for(let i=0; i<diceInHand.length; i++) {
+            singleRoll = getDieRollResult( diceInHand[i] );
+            totalRoll += singleRoll;
+        }
+        return totalRoll;
+
+    }
+
     function handleRollFirstButtons(){
         let player1FirstRoll;
         let player2FirstRoll;
-        let numSides = 4;
-        let message;
         $("#player1Button").on('click tap touchstart', function(event) {
-            player1FirstRoll = getDieRollResult(numSides);
-            message = generateSingleRollMessage(numSides, player1FirstRoll);
+            event.preventDefault();
+            let message = "";
+            player1FirstRoll = getDiceTotal(player1.diceInHand);
+            for(let i=0; i<player1.diceInHand.length; i++){
+                message += generateSingleRollMessage(player1.diceInHand[i], player1FirstRoll);
+            }
             changePlayer1Message(message);
             changePlayer2Message('It is your turn, roll the dice');
             let player = 2;
             let doSwitchMessages = false;
             switchPlayers(player, doSwitchMessages);
-            let diceInPlay = getDiceInPlay(numSides);
-            putDiceInHand(player, diceInPlay);
-            event.preventDefault();
-            return false;
         });
         $("#player2Button").on('click tap touchstart', function(event) {
-            player2FirstRoll = getDieRollResult(numSides);
-            message = generateSingleRollMessage(numSides, player2FirstRoll);
+            event.preventDefault();
+            let message = "";
+            player2FirstRoll = getDiceTotal(player2.diceInHand);
+            for(let i=0; i<player2.diceInHand.length; i++){
+                message += generateSingleRollMessage(player2.diceInHand[i], player2FirstRoll);
+            }
             changePlayer2Message(message);
             $("#player2Interface").addClass("invisible");
             showRollFirstResults(player1FirstRoll, player2FirstRoll);
+        });
+    }
+
+    function fireModal(messageTitle, messageBody, buttonText='Close', actionAfterClose=null, actionArgument=null) {
+        $('#messageTitle').html(messageTitle);
+        $('#messageBody').html(messageBody);
+        $('#messageButton').html(buttonText);
+        $('#gameModal').modal();
+        $("#messageButton").on('click tap touchstart', function(event) {
             event.preventDefault();
-            return false;
+            actionAfterClose(actionArgument);
         });
     }
 
     function handleRollButtons(){
         let numSides = "all";
         $("#player1Button").on('click tap touchstart', function(event) {
+            event.preventDefault();
             let player = 1;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPrime(player, diceInHand);
-            event.preventDefault();
-            return false;
         });
         $("#player2Button").on('click tap touchstart', function(event) {
             event.preventDefault();
             let player = 2;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPrime(player, diceInHand);
-            event.preventDefault();
-            return false;
         });
     }
 
     function handleRollForPieceButtons(){
         let numSides = 6;
         $("#player1Button").on('click tap touchstart', function(event) {
+            event.preventDefault();
             let player = 1;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPiece(player, diceInHand);
         });
         $("#player2Button").on('click tap touchstart', function(event) {
+            event.preventDefault();
             let player = 2;
             let diceInHand = getDiceInPlay(numSides);
             rollDiceForPiece(player, diceInHand);
@@ -161,12 +190,12 @@ $(document).ready(function() {
         return message;        
     }
 
-    function clearPlayer1Interface(){
+    function hidePlayer1Interface(){
         $("#player1Interface").addClass("invisible");
         $("#player1 .diceInHand").html("");
     }
 
-    function clearPlayer2Interface(){
+    function hidePlayer2Interface(){
         $("#player2Interface").addClass("invisible");
         $("#player2 .diceInHand").html("");
     }
@@ -317,24 +346,46 @@ $(document).ready(function() {
     }
 
     function rollForFirsts(){
-        $("#player2Interface").addClass("invisible");
+        let diceArray = getDiceInPlay(4);
+        putDiceInSelector(1,diceArray);
+        putDiceInSelector(2,diceArray);
+        showPlayer1Interface();
+        hidePlayer2Interface();
         changePlayer1Message('It is your turn, roll the dice');
         changePlayer2Message('Wait for your turn.');
         handleRollFirstButtons();
     }
 
-    function putDiceInHand(player, diceInPlay){
-        let switchDiv;
-        let diceDivs = "";
-        if(player === 1) {
-            switchDiv = "#player1 .diceInHand";
-        } else {
-            switchDiv = "#player2 .diceInHand";
+    function putDiceInSelector(playerNumber, diceArray) {
+        let selectorDiv;
+        switch(playerNumber){
+            case 1:
+                selectorDiv = "#player1Interface .diceSelector";
+                break;
+            case 2:
+                selectorDiv = "#player2Interface .diceSelector";
+                break;
         }
-        for (let i=0; i<diceInPlay.length; i++) {
-            diceDivs += '<div class="die die-' + diceInPlay[i] + '"></div>';
+        let diceHTML = getDiceHTML(diceArray);
+
+        $(selectorDiv).html(diceHTML);
+        
+        // $.when( $(selectorDiv).html(diceHTML) ).then(function() {
+        //     setDiceColumnHeights();
+        // });
+
+        // $(selectorDiv).html(diceHTML).promise().done(function() {
+        //     setDiceColumnHeights();
+        // });
+    }
+
+    function getDiceHTML(diceArray){
+        let diceHTML = "";
+        for (let i=0; i<diceArray.length; i++) {
+            diceHTML += '<div class="die die-' + diceArray[i] + '"></div>';
         }
-        $(switchDiv).html(diceDivs);
+        diceHTML += '<div class="clearfix"></div>';
+        return diceHTML;
     }
 
     function getDiceInPlay(dice){
@@ -355,10 +406,10 @@ $(document).ready(function() {
     function initializeTurns(player){
         let switchMessages = true;
         switchPlayers(player, switchMessages);
-        let gameMessage = "Here we go!";
-        changeGameMessage(gameMessage);
-        let diceInPlay = getDiceInPlay("all");
-        putDiceInHand(player, diceInPlay);
+        let diceArray = getDiceInPlay("all");
+        //YOU ARE HERE. NEED TO REMOVE DICE FROM BOTH HANDS. ALSO NEED TO DISABLE ROLL BUTTONS IF THERE ARE NO DICE IN THE HAND
+        putDiceInSelector(1,diceArray);
+        putDiceInSelector(2,diceArray);
     }
 
     function continueTurns(nextPlayer){
@@ -451,8 +502,6 @@ $(document).ready(function() {
                         player2.diceInHand.push(numSides);
                         break;
                 }
-                console.log(player1.diceInHand);
-                console.log(player2.diceInHand);
                 diceInHandObject.prepend(divString);
                 $(this).remove();
             }
