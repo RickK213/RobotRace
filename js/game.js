@@ -20,7 +20,8 @@ $(document).ready(function() {
 /** MAIN GAME FUNCTION
 *****************************************/
 
-    startGame();
+    $('#playButton').off();
+    handlePlayButton();
 
 /*****************************************
 /** HELPER FUNCTIONS
@@ -29,8 +30,6 @@ $(document).ready(function() {
     function initGameBoard() {
         $("#howToPlay").fadeOut(function(){
             $('#gameBoard').fadeIn();
-            setDiceColumnHeights();
-            handleDiceColumnResize();
         });
     }
 
@@ -114,7 +113,7 @@ $(document).ready(function() {
     function handleRollFirstButtons(){
         let player1FirstRoll;
         let player2FirstRoll;
-        $("#player1Button").on('click tap touchstart', function(event) {
+        $('#player1Button').on('click tap touchstart', function(event) {
             event.preventDefault();
             let message = "";
             player1FirstRoll = getDiceTotal(player1.diceInHand);
@@ -127,7 +126,7 @@ $(document).ready(function() {
             let doSwitchMessages = false;
             switchPlayers(player, doSwitchMessages);
         });
-        $("#player2Button").on('click tap touchstart', function(event) {
+        $('#player2Button').on('click tap touchstart', function(event) {
             event.preventDefault();
             let message = "";
             player2FirstRoll = getDiceTotal(player2.diceInHand);
@@ -141,15 +140,25 @@ $(document).ready(function() {
     }
 
     function handleRollButtons(){
-        $("#player1Button").on('click tap touchstart', function(event) {
+        $('#player1Button').on('click tap touchstart', function(event) {
             event.preventDefault();
             let playerNumber = 1;
-            rollDiceForPiece(playerNumber);
+            if ( player1.diceInHand.length!==2 ) {
+                alert('You must select 2 dice to roll.');
+            }
+            else {
+                rollDiceForPiece(playerNumber);
+            }
         });
-        $("#player2Button").on('click tap touchstart', function(event) {
+        $('#player2Button').on('click tap touchstart', function(event) {
             event.preventDefault();
             let playerNumber = 2;
-            rollDiceForPiece(playerNumber);
+            if ( player2.diceInHand.length!==2 ) {
+                alert('You must select 2 dice to roll.');
+            }
+            else {
+                rollDiceForPiece(playerNumber);
+            }
         });
     }
 
@@ -157,8 +166,8 @@ $(document).ready(function() {
         $('#messageTitle').html(messageTitle);
         $('#messageBody').html(messageBody);
         $('#messageButton').html(buttonText);
-        $('#gameModal').modal();
-        $("#messageButton").on('click tap touchstart', function(event) {
+        $('#gameModal').modal({backdrop: 'static'});
+        $('#messageButton').on('click tap touchstart', function(event) {
             event.preventDefault();
             actionAfterClose(actionArgument);
         });
@@ -220,13 +229,34 @@ $(document).ready(function() {
             if ( !playerThatWon ) {
                 continueRolling(nextPlayer, message);
             } else {
-                console.log('OH SHIT. WE HAVE A WINNER AND IT IS PLAYER ' + playerThatWon);
+                showGameWinnerMessage(playerThatWon, message);
             } 
         }
         else {
             message += '<br>' + totalRoll + ' IS NOT one of your piece numbers.</h5>';
             continueRolling(nextPlayer, message);
         }
+    }
+
+    function showGameWinnerMessage(playerThatWon, message){
+        let alertTitle = '';
+        let gameMessage = '';
+        let buttonText = 'Play Again';
+        let actionAfterClose = startNewGame;
+        let actionArgument = '';
+        if ( playerThatWon === 1 ) {
+            changePlayer1Message(message);
+            alertTitle += player1.name;
+            gameMessage += player1.name; 
+        } else {
+            changePlayer2Message(message);
+            alertTitle += player2.name;
+            gameMessage += player2.name; 
+        }
+        alertTitle += ' WINS!';
+        gameMessage += ' is the winner! Click below to play again.';
+        fireModal(alertTitle, gameMessage, buttonText, actionAfterClose, actionArgument);
+
     }
 
     function checkForWin(playerNumber){
@@ -349,6 +379,8 @@ $(document).ready(function() {
         hidePlayer2Interface();
         changePlayer1Message('It is your turn, roll the dice');
         changePlayer2Message('Wait for your turn.');
+        $("#player1Button").off();
+        $("#player2Button").off();
         handleRollFirstButtons();
     }
 
@@ -392,17 +424,14 @@ $(document).ready(function() {
         return diceArray;
     }
     function initializeTurns(player){
-        $("#player1Button").off();
-        $("#player2Button").off();
         let switchMessages = true;
         switchPlayers(player, switchMessages);
         let diceArray = getDiceInPlay("all");
-        //YOU ARE HERE. NEED TO REMOVE DICE FROM BOTH HANDS. ALSO NEED TO DISABLE ROLL BUTTONS IF THERE ARE NO DICE IN THE HAND
+        //NEED TO DISABLE ROLL BUTTONS IF THERE ARE NO DICE IN THE HAND
         clearPlayerHand(1);
         clearPlayerHand(2);
         putDiceInSelector(1,diceArray);
         putDiceInSelector(2,diceArray);
-        setDiceColumnHeights();
     }
 
     function clearPlayerHand(playerNumber){
@@ -428,7 +457,6 @@ $(document).ready(function() {
         else {
             showPlayer2Interface();
         }
-        handleRollButtons();
     }
 
     function generatePieceNumbers(floor, ceiling, numPieces){
@@ -443,6 +471,7 @@ $(document).ready(function() {
     }
 
     function drawPlayerBoard(playerNumber){
+        clearPlayerBoard();
         let player;
         let pieceNumber;
         let selectorID;
@@ -466,6 +495,15 @@ $(document).ready(function() {
         }
     }
 
+    function clearPlayerBoard(){
+        $('.robotPiece').each(function(){
+            $(this).addClass('invisible');
+        })
+        $('.pieceNumber').each(function(){
+            $(this).removeClass('invisible');
+        })
+    }
+
     function generatePlayerPieces(){
         let floor = 2;
         let ceiling = 32;
@@ -474,24 +512,6 @@ $(document).ready(function() {
         player2.pieceNumbers = generatePieceNumbers(floor, ceiling, numPieces);
         drawPlayerBoard(1);
         drawPlayerBoard(2);
-    }
-
-    function setDiceColumnHeights(){
-        let heightSelector = $(".diceSelector").height(); 
-        let heightInHand = $(".diceInHand").height(); 
-        let maxHeight;
-        if ( heightSelector>heightInHand ) {
-            maxHeight = heightSelector;
-        } else {
-            maxHeight = heightInHand;
-        }
-        $(".diceInHand").height(maxHeight);
-        $(".diceSelector").height(maxHeight);
-    }
-    function handleDiceColumnResize(){
-        $( window ).resize(function() {
-          setDiceColumnHeights();
-        });
     }
 
     function handleDiceSelector(){
@@ -590,15 +610,21 @@ $(document).ready(function() {
 /** START GAME
 *****************************************/
 
-    function startGame() {
-        $("#playButton").on('click tap touchstart', function(event) {
-            setPlayerNames();
-            generatePlayerPieces();
-            initGameBoard();
-            handleDiceSelector();
-            handleDiceInHand();
-            rollForFirsts();
+    function handlePlayButton() {
+        $('#playButton').on('click tap touchstart', function(event) {
+            startNewGame();
         });
+    }
+
+    function startNewGame() {
+        setPlayerNames();
+        generatePlayerPieces();
+        initGameBoard();
+        $('.diceSelector').off();
+        handleDiceSelector();
+        $('.diceInHand').off();
+        handleDiceInHand();
+        rollForFirsts();
     }
 
 /*****************************************
@@ -606,10 +632,13 @@ $(document).ready(function() {
 *****************************************/
 
     function startTurns(player) {
-        player1.pieceNumbers = [5, 6, "", "", "", ""];
-        player2.pieceNumbers = [6, 7, "", "", "", ""];
         initializeTurns(player);
+        $("#player1Button").off();
+        $("#player2Button").off();
         handleRollButtons();
+        //TO TEST FOR A GAME WINNER, UN-COMMENT OUT THE 2 LINES BELOW AND ROLL THE d4 & d6 - IT WILL MAKE THE GAME GO MUCH QUICKER!
+        //player1.pieceNumbers = [5, 6, "", "", "", ""];
+        //player2.pieceNumbers = [6, 7, "", "", "", ""];
     }
 
 });
