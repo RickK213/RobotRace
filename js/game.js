@@ -7,13 +7,11 @@ $(document).ready(function() {
 *****************************************/
     let player1 = {
         name: "Player 1",
-        piecesEarned: [],
         pieceNumbers: [],
         diceInHand: []
     };
     let player2 = {
         name: "Player 2",
-        piecesEarned: [],
         pieceNumbers: [],
         diceInHand: []
     };
@@ -60,7 +58,7 @@ $(document).ready(function() {
         let actionAfterClose;
         if ( player1FirstRoll === player2FirstRoll ) {
             alertTitle = 'It\'s a tie!'
-            gameMessage = 'Player 1 and Player 2 tied.';
+            gameMessage = player1.name + ' rolled a ' + player1FirstRoll + '. ' + player2.name + ' rolled a ' + player2FirstRoll + '. It\'s a tie! Please roll again.';
             isTied = true;
         } else if ( player1FirstRoll > player2FirstRoll ) {
             alertTitle = player1.name + ' Goes First!'
@@ -142,6 +140,19 @@ $(document).ready(function() {
         });
     }
 
+    function handleRollButtons(){
+        $("#player1Button").on('click tap touchstart', function(event) {
+            event.preventDefault();
+            let playerNumber = 1;
+            rollDiceForPiece(playerNumber);
+        });
+        $("#player2Button").on('click tap touchstart', function(event) {
+            event.preventDefault();
+            let playerNumber = 2;
+            rollDiceForPiece(playerNumber);
+        });
+    }
+
     function fireModal(messageTitle, messageBody, buttonText='Close', actionAfterClose=null, actionArgument=null) {
         $('#messageTitle').html(messageTitle);
         $('#messageBody').html(messageBody);
@@ -150,38 +161,6 @@ $(document).ready(function() {
         $("#messageButton").on('click tap touchstart', function(event) {
             event.preventDefault();
             actionAfterClose(actionArgument);
-        });
-    }
-
-    function handleRollButtons(){
-        let numSides = "all";
-        $("#player1Button").on('click tap touchstart', function(event) {
-            event.preventDefault();
-            let player = 1;
-            let diceInHand = getDiceInPlay(numSides);
-            rollDiceForPrime(player, diceInHand);
-        });
-        $("#player2Button").on('click tap touchstart', function(event) {
-            event.preventDefault();
-            let player = 2;
-            let diceInHand = getDiceInPlay(numSides);
-            rollDiceForPrime(player, diceInHand);
-        });
-    }
-
-    function handleRollForPieceButtons(){
-        let numSides = 6;
-        $("#player1Button").on('click tap touchstart', function(event) {
-            event.preventDefault();
-            let player = 1;
-            let diceInHand = getDiceInPlay(numSides);
-            rollDiceForPiece(player, diceInHand);
-        });
-        $("#player2Button").on('click tap touchstart', function(event) {
-            event.preventDefault();
-            let player = 2;
-            let diceInHand = getDiceInPlay(numSides);
-            rollDiceForPiece(player, diceInHand);
         });
     }
 
@@ -208,133 +187,148 @@ $(document).ready(function() {
         $("#player2Interface").removeClass("invisible");
     }
 
-    function checkForPrime(totalRoll) {
-        let isPrime = true;
-        for(let i=2; i<=totalRoll; i++){
-            for(let j=2; j<i; j++) {
-                if( totalRoll % j ===0 ) {
-                    isPrime = false;
-                }
-            }
-        }
-        return isPrime;
-    }
-
-    function rollForPiece(player, message){
-        changeGameMessage('Player ' + player + ' is rolling for a piece of the robot!');
-        let inactivePlayerMessage = 'Player ' + player + ' is rolling for a piece of their robot.';
-        let numSides = 6;
-        if( player === 1 ) {
-            changePlayer1Message(message);
-            clearPlayer2Interface();
-            changePlayer2Message(inactivePlayerMessage);
-            let diceInHand = getDiceInPlay(numSides);
-            let nextPlayer = 1;
-            putDiceInHand(nextPlayer, diceInHand);
-        } else {
-            changePlayer2Message(message);
-            clearPlayer1Interface();
-            changePlayer1Message(inactivePlayerMessage);
-            let diceInHand = getDiceInPlay(numSides);
-            let nextPlayer = 2;
-            putDiceInHand(nextPlayer, diceInHand);
-        }
-        handleRollForPieceButtons(player);
-    }
-
-    function continueRolling(player, message){
-        changeGameMessage('The result was not a prime number, the game continues...');
-        if( player === 1 ) {
-            clearPlayer1Interface();
-            changePlayer1Message(message);
-            changePlayer2Message('It is your turn, roll the dice');
-            showPlayer2Interface();
-            let diceInHand = getDiceInPlay("all");
-            let nextPlayer = 2;
-            putDiceInHand(nextPlayer, diceInHand);
-        } else {
-            clearPlayer2Interface();
-            changePlayer2Message(message);
-            changePlayer1Message('It is your turn, roll the dice');
-            showPlayer1Interface();
-            let diceInHand = getDiceInPlay("all");
-            let nextPlayer = 1;
-            putDiceInHand(nextPlayer, diceInHand);
-        }
-    }
-
-    function rollDiceForPrime(player, diceInHand){
+    function rollDiceForPiece(playerNumber){
         let totalRoll = 0;
         let singleRoll;
         let message = "";
+        let pieceSelector;
+        let fullRobotArray = 6;
+        let nextPlayer;
+        let player1Won = false;
+        let player2Won = false;
+        let playerHasPiece;
+        switch (playerNumber) {
+            case 1:
+                nextPlayer = 2;
+                break;
+            case 2: 
+                nextPlayer = 1;
+                break;
+        }
+        let diceInHand = getDiceInHand(playerNumber);
         for( let i=0; i<diceInHand.length; i++ ) {
             singleRoll = getDieRollResult(diceInHand[i]);
             totalRoll += singleRoll;
             message += generateSingleRollMessage(diceInHand[i], singleRoll);
         }
-        message += '<h5 class="text-primary">Total Roll: ' + totalRoll;
-        let isPrime = checkForPrime(totalRoll);
-        if ( isPrime ) {
-            message += '<br>' + totalRoll + ' IS a prime number! You get to roll for a piece of your robot!</h5>';
-            rollForPiece(player, message); //need to write this
-        } else {
-            message += '<br>' + totalRoll + ' IS NOT a prime number!</h5>';
-            continueRolling(player, message);
+        message +='<br><strong>TOTAL ROLL: ' + totalRoll + '</strong>';;
+        playerHasPiece = checkForPiece(playerNumber, totalRoll);
+        if ( playerHasPiece ) {
+            message += '<br>' + totalRoll + ' IS one of your piece numbers!</h5>';
+            addPiece(playerNumber, totalRoll);
+            let playerThatWon = checkForWin(playerNumber);
+            if ( !playerThatWon ) {
+                continueRolling(nextPlayer, message);
+            } else {
+                console.log('OH SHIT. WE HAVE A WINNER AND IT IS PLAYER ' + playerThatWon);
+            } 
+        }
+        else {
+            message += '<br>' + totalRoll + ' IS NOT one of your piece numbers.</h5>';
+            continueRolling(nextPlayer, message);
         }
     }
 
-    function rollDiceForPiece(player, diceInHand){
-        let pieceRoll;
-        let message = "";
-        let pieceSelector;
-        let fullRobotArray = 6;
-        let nextPlayer;
-        let gameOver;
-        for( let i=0; i<diceInHand.length; i++ ) {
-            pieceRoll = getDieRollResult(diceInHand[i]);
-            message += generateSingleRollMessage(diceInHand[i], pieceRoll);
-        }
-        if( player===1 ){
-            if ( !player1.piecesEarned.includes(pieceRoll) ) {
-                pieceSelector = "#robot1Piece"+pieceRoll;
-                $(pieceSelector).removeClass("invisible");
-                player1.piecesEarned.push(pieceRoll);
-                message += getAddedPieceMessage(pieceRoll);
-                if (player1.piecesEarned.length === fullRobotArray) {
-                    message += '<h3>YOU WIN!</h3>';
-                    gameOver = true;
+    function checkForWin(playerNumber){
+        if(playerNumber === 1) {
+            let player1Won = true;
+            for(let i=0; i<player1.pieceNumbers.length; i++){
+                if ( typeof player1.pieceNumbers[i] === 'number' ) {
+                    player1Won = false;
                 }
-            } else {
-                message += getDuplicatePieceMessage(pieceRoll);
             }
-            clearPlayer1Interface();
-            changePlayer1Message(message);
-            nextPlayer = 2;
+            if (player1Won) {
+                return playerNumber;
+            }
+            else{
+                return false;
+            }
         } else {
-            if ( !player2.piecesEarned.includes(pieceRoll) ) {
-                pieceSelector = "#robot2Piece"+pieceRoll;
-                $(pieceSelector).removeClass("invisible");
-                player2.piecesEarned.push(pieceRoll);
-                message += getAddedPieceMessage(pieceRoll);
-                if (player2.piecesEarned.length === fullRobotArray) {
-                    message += '<h3>YOU WIN!</h3>';
-                    gameOver = true;
+            let player2Won = true;
+            for(let i=0; i<player2.pieceNumbers.length; i++){
+                if ( typeof player2.pieceNumbers[i] === 'number' ) {
+                    player2Won = false;
                 }
-            } else {
-                message += getDuplicatePieceMessage(pieceRoll);
             }
-            clearPlayer2Interface();
+            if (player2Won) {
+                return playerNumber;
+            }
+            else{
+                return false;
+            }
+        }
+    };
+
+    function addPiece(playerNumber, totalRoll){
+        if(playerNumber === 1){
+            let pieceIndex = getPieceIndex(player1.pieceNumbers, totalRoll);
+            player1.pieceNumbers[pieceIndex] = "";
+            let pieceSelector = "#robot1Piece"+(pieceIndex+1);
+            $(pieceSelector).removeClass("invisible");
+            let labelSelector = "#robot1Label"+(pieceIndex+1);
+            $(labelSelector).addClass("invisible");
+        }
+        else {
+            let pieceIndex = getPieceIndex(player2.pieceNumbers, totalRoll);
+            player2.pieceNumbers[pieceIndex] = "";
+            let pieceSelector = "#robot2Piece"+(pieceIndex+1);
+            $(pieceSelector).removeClass("invisible");
+            let labelSelector = "#robot2Label"+(pieceIndex+1);
+            $(labelSelector).addClass("invisible");
+        }
+    }
+
+    function getPieceIndex(playerPieces, totalRoll){
+        let pieceIndex;
+        for(let i=0; i<playerPieces.length; i++){
+            if ( playerPieces[i] === totalRoll ) {
+                pieceIndex = i;
+            }
+        }
+        return pieceIndex;
+    }
+
+    function continueRolling(nextPlayer, message){
+        if( nextPlayer === 1 ) {
+            hidePlayer2Interface();
             changePlayer2Message(message);
-            nextPlayer = 1;
-        }
-        if ( gameOver ) {
-            clearPlayer1Interface();
-            clearPlayer2Interface();
+            changePlayer1Message('It is your turn, roll the dice');
+            showPlayer1Interface();
+            clearPlayerHand(1);
+            let diceArray = getDiceInPlay("all");
+            putDiceInSelector(1,diceArray);
+            // let diceInHand = getDiceInPlay("all");
+            // let nextPlayer = 2;
+            // putDiceInHand(nextPlayer, diceInHand);
         } else {
-            $("#player1Button").off();
-            $("#player2Button").off();
-            continueTurns(nextPlayer);
+            hidePlayer1Interface();
+            changePlayer1Message(message);
+            changePlayer2Message('It is your turn, roll the dice');
+            showPlayer2Interface();
+            clearPlayerHand(2);
+            let diceArray = getDiceInPlay("all");
+            putDiceInSelector(2,diceArray);
+            // let diceInHand = getDiceInPlay("all");
+            // let nextPlayer = 1;
+            // putDiceInHand(nextPlayer, diceInHand);
         }
+    }
+
+    function checkForPiece(playerNumber, totalRoll){
+        let playerPieces;
+        let playerHasPiece = false;
+        switch(playerNumber){
+            case 1:
+                playerPieces = player1.pieceNumbers;
+                break;
+            case 2:
+                playerPieces = player2.pieceNumbers;
+                break;
+        }
+        if ( playerPieces.includes(totalRoll) ) {
+            playerHasPiece = true;
+        }
+        return playerHasPiece;
     }
 
     function getAddedPieceMessage(pieceRoll){
@@ -349,6 +343,8 @@ $(document).ready(function() {
         let diceArray = getDiceInPlay(4);
         putDiceInSelector(1,diceArray);
         putDiceInSelector(2,diceArray);
+        clearPlayerHand(1);
+        clearPlayerHand(2);
         showPlayer1Interface();
         hidePlayer2Interface();
         changePlayer1Message('It is your turn, roll the dice');
@@ -368,15 +364,7 @@ $(document).ready(function() {
         }
         let diceHTML = getDiceHTML(diceArray);
 
-        $(selectorDiv).html(diceHTML);
-        
-        // $.when( $(selectorDiv).html(diceHTML) ).then(function() {
-        //     setDiceColumnHeights();
-        // });
-
-        // $(selectorDiv).html(diceHTML).promise().done(function() {
-        //     setDiceColumnHeights();
-        // });
+        $(selectorDiv).html("").html(diceHTML);
     }
 
     function getDiceHTML(diceArray){
@@ -384,7 +372,7 @@ $(document).ready(function() {
         for (let i=0; i<diceArray.length; i++) {
             diceHTML += '<div class="die die-' + diceArray[i] + '"></div>';
         }
-        diceHTML += '<div class="clearfix"></div>';
+        diceHTML += '<div class="clearfix">&nbsp;</div>';
         return diceHTML;
     }
 
@@ -404,12 +392,33 @@ $(document).ready(function() {
         return diceArray;
     }
     function initializeTurns(player){
+        $("#player1Button").off();
+        $("#player2Button").off();
         let switchMessages = true;
         switchPlayers(player, switchMessages);
         let diceArray = getDiceInPlay("all");
         //YOU ARE HERE. NEED TO REMOVE DICE FROM BOTH HANDS. ALSO NEED TO DISABLE ROLL BUTTONS IF THERE ARE NO DICE IN THE HAND
+        clearPlayerHand(1);
+        clearPlayerHand(2);
         putDiceInSelector(1,diceArray);
         putDiceInSelector(2,diceArray);
+        setDiceColumnHeights();
+    }
+
+    function clearPlayerHand(playerNumber){
+        let handDiv;
+        switch(playerNumber){
+            case 1:
+                handDiv = "#player1Interface .diceInHand";
+                player1.diceInHand = [];
+                break;
+            case 2:
+                handDiv = "#player2Interface .diceInHand";
+                player2.diceInHand = [];
+                break;
+        }
+
+        $(handDiv).html("");
     }
 
     function continueTurns(nextPlayer){
@@ -426,7 +435,9 @@ $(document).ready(function() {
         let pieceNumberArray = [];
         while ( pieceNumberArray.length<numPieces ) {
             let pieceNumber = Math.floor(Math.random()*(ceiling-floor+1)+floor);
-            pieceNumberArray.push(pieceNumber);
+            if( !pieceNumberArray.includes(pieceNumber) ) {
+                pieceNumberArray.push(pieceNumber);
+            }
         }
         return pieceNumberArray;
     }
@@ -484,38 +495,84 @@ $(document).ready(function() {
     }
 
     function handleDiceSelector(){
-        $('.diceSelector').on('click tap touchstart', '.die' , function(event) {
-            let diceInHandObject = $(this).parent().parent().siblings().children('.diceInHand');
+        $('.diceSelector').on('click tap touchstart', '.die', function(event) {
+            event.preventDefault();
             let playerNumber = parseInt($(this).parent().parent().parent().parent()[0].className);
-            let numDiceInHand = diceInHandObject.children().length-1;
+            let diceInHand = getDiceInHand(playerNumber);
+            let numDiceInHand = diceInHand.length;
             if( numDiceInHand ===2 ) {
                 alert('You can only roll 2 dice. Click the dice in your hand to remove them.');
             } else {
                 let className = ( $(this)[0].className );
-                let divString = '<div class="' + className + '"></div>';
                 let numSides = parseInt( className.match(/[0-9]+/g)[0] );
-                switch(playerNumber){
-                    case 1:
-                        player1.diceInHand.push(numSides);
-                        break;
-                    case 2:
-                        player2.diceInHand.push(numSides);
-                        break;
-                }
-                diceInHandObject.prepend(divString);
+                putDiceInHand(playerNumber, numSides);
                 $(this).remove();
             }
         });
     }
 
     function handleDiceInHand(){
-        $('.diceInHand').on('click tap touchstart', '.die' , function(event) {
-            let diceSelectorObject = $(this).parent().parent().siblings().children('.diceSelector');
+        $('.diceInHand').on('click tap touchstart', '.die', function(event) {
+            event.preventDefault();
+            let playerNumber = parseInt($(this).parent().parent().parent().parent()[0].className);
             let className = ( $(this)[0].className );
-            let divString = '<div class="' + className + '"></div>';
-            diceSelectorObject.prepend(divString);
+            let numSides = parseInt( className.match(/[0-9]+/g)[0] );
+            removeDieFromHand(playerNumber, numSides);
             $(this).remove();
         });
+    }
+
+    function removeDieFromHand(playerNumber, numSides){
+        let dieString = '<div class="die die-' + numSides + '"</div>';
+        switch (playerNumber) {
+            case 1:
+                for (let i=0; i<player1.diceInHand.length; i++) {
+                    if ( player1.diceInHand[i] === numSides ) {
+                        player1.diceInHand.splice(i,1);
+                        $('#player1Interface .diceSelector').prepend(dieString);
+                    }
+                }
+                break;
+            case 2:
+                for (let i=0; i<player2.diceInHand.length; i++) {
+                    if ( player2.diceInHand[i] === numSides ) {
+                        player2.diceInHand.splice(i,1);
+                        $('#player2Interface .diceSelector').prepend(dieString);
+                    }
+                }
+                break;
+        }
+    }
+
+    function putDiceInHand(playerNumber, numSides){
+        let diceInHandDiv;
+        switch(playerNumber){
+            case 1:
+                diceInHandDiv = "#player1Interface .diceInHand";
+                player1.diceInHand.push(numSides);
+                break;
+            case 2:
+                diceInHandDiv = "#player2Interface .diceInHand";
+                player2.diceInHand.push(numSides);
+                break;
+        }
+        let diceArray = getDiceInHand(playerNumber);
+        let diceHTML = getDiceHTML(diceArray);
+
+        $(diceInHandDiv).html("").html(diceHTML);
+    }
+
+    function getDiceInHand(playerNumber){
+        let diceInHand;
+        switch(playerNumber){
+            case 1:
+                diceInHand = player1.diceInHand;
+                break;
+            case 2:
+                diceInHand = player2.diceInHand;
+                break;
+        }
+        return diceInHand;
     }
 
     function setPlayerNames(){
@@ -549,6 +606,8 @@ $(document).ready(function() {
 *****************************************/
 
     function startTurns(player) {
+        player1.pieceNumbers = [5, 6, "", "", "", ""];
+        player2.pieceNumbers = [6, 7, "", "", "", ""];
         initializeTurns(player);
         handleRollButtons();
     }
