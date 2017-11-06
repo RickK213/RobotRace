@@ -160,3 +160,11 @@
         });
     }
 
+    function getAddedPieceMessage(pieceRoll){
+        return '<h5>Awesome! You earned piece #' + pieceRoll + ' for your robot!</h5>';
+    }
+
+    function getDuplicatePieceMessage(pieceRoll){
+        return '<h5>Sorry! You already have piece #' + pieceRoll + ' for your robot!</h5>';
+    }
+

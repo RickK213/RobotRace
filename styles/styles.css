@@ -138,8 +138,7 @@ h1, h2, h3 {
     width: 256px;
     height: 256px;
     position: relative;
-/*    background: rgba(0,255,255,.5);    
-*/}
+}
 .pieceNumber {
     position: absolute;
     font-size: 18px;
@@ -195,4 +194,12 @@ h1, h2, h3 {
 #player2Robot .piece6 {
     left: 155px;
     top: 205px;
+}
+.diceSelector, .diceInHand {
+    height: 90px;
+}
+@media (min-width: 992px) {
+    .diceSelector, .diceInHand {
+        height: 140px;
+    }
 }
