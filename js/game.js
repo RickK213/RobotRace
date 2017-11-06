@@ -604,8 +604,8 @@ $(document).ready(function() {
             $("#player2Button").off();
             handleRollButtons();
             //TO TEST FOR A GAME WINNER, REMOVE COMMENTS FROM THE 2 LINES BELOW AND ROLL THE d4 & d6 - IT WILL MAKE THE GAME GO MUCH QUICKER!
-            player1.pieceNumbers = [5, 6, "", "", "", ""];
-            player2.pieceNumbers = [6, 7, "", "", "", ""];
+            //player1.pieceNumbers = [5, 6, "", "", "", ""];
+            //player2.pieceNumbers = [6, 7, "", "", "", ""];
         }
 
         function switchPlayers(player, doSwitchMessages) {
