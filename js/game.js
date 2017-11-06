@@ -259,16 +259,6 @@ $(document).ready(function() {
             return diceArray;
         }
         
-        function getDiceTotal(diceInHand){
-            let singleRoll;
-            let totalRoll = 0;
-            for(let i=0; i<diceInHand.length; i++) {
-                singleRoll = getDieRollResult( diceInHand[i] );
-                totalRoll += singleRoll;
-            }
-            return totalRoll;
-        }
-
         function getDieRollResult(numSides){
             let dieRoll = Math.floor(Math.random() * numSides) + 1;
             return dieRoll;
@@ -299,23 +289,6 @@ $(document).ready(function() {
         function getSingleRollMessage(numSides, singleRoll) {
             let message = '<div class="die-container"><div class="die-small die-' + numSides + '"></div><span class="dieRoll"> =' + singleRoll + '</span></div>';
             return message;        
-        }
-
-        function getTotalRollMessage(playerNumber, totalRoll){
-            let playerObject;
-            switch(playerNumber){
-                case 1:
-                    playerObject = player1;
-                    break;
-                case 2:
-                    playerObject = player2;
-                    break;
-            }
-            let message = "";
-            for(let i=0; i<playerObject.diceInHand.length; i++){
-                message += getSingleRollMessage(playerObject.diceInHand[i], totalRoll);
-            }
-            return message;
         }
 
         function handleDiceInHand(){
@@ -371,13 +344,13 @@ $(document).ready(function() {
         }
 
         function handleRollFirstButtons(){
-            let player1TotalRoll;
+            let player1Roll;
             $('#player1Button').on('click tap touchstart', function(event) {
                 event.preventDefault();
                 let hasProperDice = checkForDice(player1, 1);
                 if ( hasProperDice ) {
-                    player1TotalRoll = getDiceTotal(player1.diceInHand);
-                    let message = getTotalRollMessage(1, player1TotalRoll);
+                    player1Roll = getDieRollResult(player1.diceInHand[0]);
+                    let message = getSingleRollMessage(4, player1Roll);
                     changePlayer1Message(message);
                     changePlayer2Message('It is your turn, roll the dice');
                     switchPlayers(2, false);
@@ -387,11 +360,11 @@ $(document).ready(function() {
                 event.preventDefault();
                 let hasProperDice = checkForDice(player2, 1);
                 if ( hasProperDice ) {
-                    let player2TotalRoll = getDiceTotal(player2.diceInHand);
-                    let message = getTotalRollMessage(1, player2TotalRoll);
+                    let player2Roll = getDieRollResult(player2.diceInHand[0]);
+                    let message = getSingleRollMessage(4, player2Roll);
                     changePlayer2Message(message);
                     hidePlayer2Interface();
-                    showRollFirstResults(player1TotalRoll, player2TotalRoll);
+                    showRollFirstResults(player1Roll, player2Roll);
                 }
             });
         }
@@ -480,6 +453,8 @@ $(document).ready(function() {
             let nextPlayer;
             let player1Won = false;
             let player2Won = false;
+            let totalRoll = 0;
+            let message = "";
             switch (playerNumber) {
                 case 1:
                     nextPlayer = 2;
@@ -489,8 +464,11 @@ $(document).ready(function() {
                     break;
             }
             let diceInHand = getDiceInHand(playerNumber);
-            let totalRoll = getDiceTotal(diceInHand);
-            let message = getTotalRollMessage(playerNumber, totalRoll);
+            for ( let i=0; i<diceInHand.length; i++ ) {
+                let singleRoll = getDieRollResult(diceInHand[i]);
+                message += getSingleRollMessage(diceInHand[i], singleRoll);
+                totalRoll += singleRoll;
+            }
             message +='<br><strong>TOTAL ROLL: ' + totalRoll + '</strong>';;
             let playerHasPiece = checkForPiece(playerNumber, totalRoll);
             if ( playerHasPiece ) {
